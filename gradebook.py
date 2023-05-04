@@ -3,8 +3,6 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import scipy
 
 HERE = Path(__file__).parent
 DATA_FOLDER = HERE / "data"
@@ -138,25 +136,3 @@ for section, table in final_data.groupby("Section"):
         f"file {section_file}."
     )
     table.sort_values(by=["Last Name", "First Name"]).to_csv(section_file)
-
-## Add summary statistics to data
-# Creating bar chart for representation of grades
-grade_counts = final_data["Final Grade"].value_counts().sort_index()
-grade_counts.plot.bar()
-plt.show()
-
-# Creating histogram from data
-final_data["Final Score"].plot.hist(bins=20, label="Histogram")
-
-# Creating kernel density estimate with assumption of normal distrubution 
-final_data["Final Score"].plot.density(
-    linewidth=4, label="Kernel Density Estimate"
-)
-
-final_mean = final_data["Final Score"].mean()
-final_std = final_data["Final Score"].std()
-x = np.linspace(final_mean - 5 * final_std, final_mean + 5 * final_std, 200)
-normal_dist = scipy.stats.norm.pdf(x, loc=final_mean, scale=final_std)
-plt.plot(x, normal_dist, label="Normal Distribution", linewidth=4)
-plt.legend()
-plt.show()
