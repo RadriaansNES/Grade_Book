@@ -15,7 +15,7 @@ roster = pd.read_csv(
     index_col="NetID",
 )
 
-## Load in hw exam grades, selecting all sublists except submission time. Conversion to lowercase
+## Load in hw exam grades, selecting all sublists except submission (keyword). Conversion to lowercase
 hw_exam_grades = pd.read_csv(
     DATA_FOLDER / "hw_exam_grades.csv",
     converters={"SID": str.lower},
@@ -126,3 +126,13 @@ def grade_mapping(value):
         
 letter_grades = final_data["Ceiling Score"].map(grade_mapping)
 final_data["Final Grade"] = pd.Categorical(letter_grades, categories=grades.values(), ordered=True)
+
+## Group data via section, then sort data via last name, first. Append to csv file
+for section, table in final_data.groupby("Section"):
+    section_file = DATA_FOLDER / f"Section {section} Grades.csv"
+    num_students = table.shape[0]
+    print(
+        f"In Section {section} there are {num_students} students saved to "
+        f"file {section_file}."
+    )
+    table.sort_values(by=["Last Name", "First Name"]).to_csv(section_file)
